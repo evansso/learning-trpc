@@ -3,9 +3,12 @@ import { Greetings, Chats } from "./greetings";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
-export default function Home() {
-  prefetch(trpc.greetings.hello.queryOptions());
-  prefetch(trpc.chats.get.queryOptions());
+export default async function Home() {
+  // Prefetch queries during SSR
+  await Promise.all([
+    prefetch(trpc.greetings.hello.queryOptions()),
+    prefetch(trpc.chats.get.queryOptions()),
+  ]);
 
   return (
     <div>

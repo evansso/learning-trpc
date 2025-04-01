@@ -51,6 +51,13 @@ export function TRPCReactProvider({ children }: { children: React.ReactNode }) {
         httpBatchLink({
           url: getUrl(),
           transformer: superjson,
+          // Disable batching during SSR
+          headers: () => {
+            return {
+              "x-trpc-source":
+                typeof window === "undefined" ? "server" : "client",
+            };
+          },
         }),
       ],
     })
