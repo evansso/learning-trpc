@@ -1,16 +1,15 @@
 "use client";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { QueryClient } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { createTRPCClient, httpBatchLink } from "@trpc/client";
-
 import superjson from "superjson";
 import { createTRPCContext } from "@trpc/tanstack-react-query";
 import type { AppRouter } from "@/trpc/server/routers/_app";
 import { makeQueryClient } from "./query-client";
 
-export const { TRPCProvider, useTRPC, useTRPCClient } =
-  createTRPCContext<AppRouter>();
+export const { TRPCProvider, useTRPC } = createTRPCContext<AppRouter>();
 
 let browserQueryClient: QueryClient;
 function getQueryClient() {
@@ -26,7 +25,11 @@ function getQueryClient() {
   return browserQueryClient;
 }
 
-export function TRPCReactProvider({ children }: { children: React.ReactNode }) {
+export function TRPCReactProvider(
+  props: Readonly<{
+    children: React.ReactNode;
+  }>
+) {
   const queryClient = getQueryClient();
   const [trpcClient] = useState(() =>
     createTRPCClient<AppRouter>({
@@ -34,13 +37,6 @@ export function TRPCReactProvider({ children }: { children: React.ReactNode }) {
         httpBatchLink({
           url: "https://learning-trpc.vercel.app/api/trpc",
           transformer: superjson,
-          // Disable batching during SSR
-          headers: () => {
-            return {
-              "x-trpc-source":
-                typeof window === "undefined" ? "server" : "client",
-            };
-          },
         }),
       ],
     })
@@ -48,7 +44,9 @@ export function TRPCReactProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <TRPCProvider trpcClient={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        {props.children}
+      </QueryClientProvider>
     </TRPCProvider>
   );
 }
