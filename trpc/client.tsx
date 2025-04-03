@@ -27,13 +27,21 @@ function getQueryClient() {
   return browserQueryClient;
 }
 
+function getUrl() {
+  if (process.env.NODE_ENV === "development")
+    return "http://localhost:3000/api/trpc";
+  if (process.env.NODE_ENV === "production")
+    return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/trpc`;
+  return "";
+}
+
 export function TRPCReactProvider({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
   const [trpcClient] = useState(() =>
     createTRPCClient<AppRouter>({
       links: [
         httpBatchLink({
-          url: "https://learning-trpc.vercel.app/api/trpc",
+          url: getUrl(),
           transformer: superjson,
         }),
       ],
