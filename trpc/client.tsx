@@ -26,30 +26,13 @@ function getQueryClient() {
   return browserQueryClient;
 }
 
-function getUrl() {
-  // During SSR, we should use relative URLs
-  if (typeof window === "undefined") {
-    return "/api/trpc";
-  }
-
-  // Client-side only
-  const base = (() => {
-    if (process.env.NODE_ENV === "development") return "http://localhost:3000";
-    if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-    if (process.env.NEXT_PUBLIC_VERCEL_URL)
-      return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
-    return "";
-  })();
-  return `${base}/api/trpc`;
-}
-
 export function TRPCReactProvider({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
   const [trpcClient] = useState(() =>
     createTRPCClient<AppRouter>({
       links: [
         httpBatchLink({
-          url: getUrl(),
+          url: "https://learning-trpc.vercel.app/api/trpc",
           transformer: superjson,
           // Disable batching during SSR
           headers: () => {
