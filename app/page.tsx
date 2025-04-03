@@ -1,7 +1,6 @@
-import { prefetch, trpc } from "@/trpc/server";
+import { HydrateClient, prefetch, trpc } from "@/trpc/server";
 import { Greetings, Chats } from "./greetings";
 import { Suspense } from "react";
-import { ErrorBoundary } from "react-error-boundary";
 
 export default async function Home() {
   // Prefetch queries during SSR
@@ -12,16 +11,15 @@ export default async function Home() {
 
   return (
     <div>
-      <ErrorBoundary fallback={<div>Something went wrong</div>}>
+      <HydrateClient>
         <Suspense fallback={<div>Loading...</div>}>
           <Greetings />
         </Suspense>
-      </ErrorBoundary>
-      <ErrorBoundary fallback={<div>Something went wrong</div>}>
+
         <Suspense fallback={<div>Loading...</div>}>
           <Chats />
         </Suspense>
-      </ErrorBoundary>
+      </HydrateClient>
     </div>
   );
 }
