@@ -1,4 +1,4 @@
-import { HydrateClient, prefetch, trpc } from "@/trpc/server";
+import { prefetch, trpc } from "@/trpc/server";
 import { Greetings, Chats } from "./greetings";
 import { Suspense } from "react";
 
@@ -11,15 +11,13 @@ export default async function Home() {
 
   return (
     <div>
-      <HydrateClient>
-        <Suspense fallback={<div>Loading...</div>}>
-          <Greetings />
-        </Suspense>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Greetings />
+      </Suspense>
 
-        <Suspense fallback={<div>Loading...</div>}>
-          <Chats />
-        </Suspense>
-      </HydrateClient>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Chats />
+      </Suspense>
     </div>
   );
 }
