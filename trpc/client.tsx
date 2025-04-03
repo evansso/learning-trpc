@@ -28,13 +28,14 @@ function getQueryClient() {
 }
 
 function getUrl() {
-  if (process.env.NODE_ENV === "development")
-    return "http://localhost:3000/api/trpc";
-  if (process.env.NODE_ENV === "production")
-    return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/trpc`;
-  return "";
+  const base = (() => {
+    if (typeof window !== "undefined") return "";
+    if (process.env.NEXT_PUBLIC_VERCEL_URL)
+      return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
+    return "http://localhost:3000";
+  })();
+  return `${base}/api/trpc`;
 }
-
 export function TRPCReactProvider({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
   const [trpcClient] = useState(() =>
